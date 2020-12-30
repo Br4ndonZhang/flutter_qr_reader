@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_qr_reader/flutter_qr_reader.dart';
@@ -51,10 +53,11 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             FlatButton(
               onPressed: () async {
-                Map<PermissionGroup, PermissionStatus> permissions =
-                    await PermissionHandler().requestPermissions([PermissionGroup.camera]);
-                print(permissions);
-                if (permissions[PermissionGroup.camera] == PermissionStatus.granted) {
+                var status = await Permission.camera.status;
+                print(status);
+
+                if (await Permission.camera.request().isGranted) {
+                  // Either the permission was already granted before or the user just granted it.
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -67,6 +70,7 @@ class _HomePageState extends State<HomePage> {
                     isOk = true;
                   });
                 }
+
               },
               child: Text("请求权限"),
               color: Colors.blue,
@@ -79,9 +83,10 @@ class _HomePageState extends State<HomePage> {
             ),
             FlatButton(
                 onPressed: () async {
-                  var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                  final picker = ImagePicker();
+                  var image = await picker.getImage(source: ImageSource.gallery);
                   if (image == null) return;
-                  final rest = await FlutterQrReader.imgScan(image);
+                  final rest = await FlutterQrReader.imgScan(File(image.path));
                   setState(() {
                     data = rest;
                   });
