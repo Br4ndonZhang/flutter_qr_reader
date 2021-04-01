@@ -8,14 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class FlutterQrReader {
-  static const MethodChannel _channel = const MethodChannel('me.hetian.flutter_qr_reader');
+  static const MethodChannel _channel =
+      const MethodChannel('me.hetian.flutter_qr_reader');
 
-  static Future<String> imgScan(File file) async {
+  static Future<String?> imgScan(File? file) async {
     if (file?.existsSync() == false) {
       return null;
     }
     try {
-      final rest = await _channel.invokeMethod("imgQrCode", {"file": file.path});
+      final rest =
+          await _channel.invokeMethod("imgQrCode", {"file": file?.path});
       return rest;
     } catch (e) {
       print(e);
@@ -33,10 +35,10 @@ class QrReaderView extends StatefulWidget {
   final double height;
 
   QrReaderView({
-    Key key,
-    this.width,
-    this.height,
-    this.callback,
+    Key? key,
+    required this.width,
+    required this.height,
+    required this.callback,
     this.autoFocusIntervalInMs = 500,
     this.torchEnabled = false,
   }) : super(key: key);
@@ -65,7 +67,8 @@ class _QrReaderViewState extends State<QrReaderView> {
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: _onPlatformViewCreated,
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-          new Factory<OneSequenceGestureRecognizer>(() => new EagerGestureRecognizer()),
+          new Factory<OneSequenceGestureRecognizer>(
+              () => new EagerGestureRecognizer()),
         ].toSet(),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -80,7 +83,8 @@ class _QrReaderViewState extends State<QrReaderView> {
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: _onPlatformViewCreated,
         gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-          new Factory<OneSequenceGestureRecognizer>(() => new EagerGestureRecognizer()),
+          new Factory<OneSequenceGestureRecognizer>(
+              () => new EagerGestureRecognizer()),
         ].toSet(),
       );
     } else {
@@ -101,22 +105,27 @@ class _QrReaderViewState extends State<QrReaderView> {
 typedef ReadChangeBack = void Function(String, List<Offset>);
 
 class QrReaderViewController {
-  final int id;
-  final MethodChannel _channel;
-  QrReaderViewController(this.id) : _channel = MethodChannel('me.hetian.flutter_qr_reader.reader_view_$id') {
+  late final int id;
+  late final MethodChannel _channel;
+
+  QrReaderViewController(this.id)
+      : _channel =
+            MethodChannel('me.hetian.flutter_qr_reader.reader_view_$id') {
     _channel.setMethodCallHandler(_handleMessages);
   }
-  ReadChangeBack onQrBack;
+
+  late ReadChangeBack onQrBack;
 
   Future _handleMessages(MethodCall call) async {
     switch (call.method) {
       case "onQRCodeRead":
-        final points = List<Offset>();
+        final points = List<Offset>.empty();
         if (call.arguments.containsKey("points")) {
           final pointsStrs = call.arguments["points"];
           for (String point in pointsStrs) {
             final a = point.split(",");
-            points.add(Offset(double.tryParse(a.first), double.tryParse(a.last)));
+            points.add(
+                Offset(double.tryParse(a.first)!, double.tryParse(a.last)!));
           }
         }
 
@@ -126,7 +135,7 @@ class QrReaderViewController {
   }
 
   // 打开手电筒
-  Future<bool> setFlashlight() async {
+  Future<bool?> setFlashlight() async {
     return _channel.invokeMethod("flashlight");
   }
 

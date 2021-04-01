@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_qr_reader/flutter_qr_reader.dart';
 import 'package:flutter_qr_reader_example/scanViewDemo.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,16 +26,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => new _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  QrReaderViewController _controller;
+  late QrReaderViewController _controller;
   bool isOk = false;
-  String data;
+  String? data;
+
   @override
   void initState() {
     super.initState();
@@ -70,21 +70,22 @@ class _HomePageState extends State<HomePage> {
                     isOk = true;
                   });
                 }
-
               },
               child: Text("请求权限"),
               color: Colors.blue,
             ),
             FlatButton(
               onPressed: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ScanViewDemo()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ScanViewDemo()));
               },
               child: Text("独立UI"),
             ),
             FlatButton(
                 onPressed: () async {
                   final picker = ImagePicker();
-                  var image = await picker.getImage(source: ImageSource.gallery);
+                  var image =
+                      await picker.getImage(source: ImageSource.gallery);
                   if (image == null) return;
                   final rest = await FlutterQrReader.imgScan(File(image.path));
                   setState(() {
@@ -104,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                   _controller.startCamera(onScan);
                 },
                 child: Text("开始扫码（暂停后）")),
-            if (data != null) Text(data),
+            if (data != null) Text(data!),
             if (isOk)
               Container(
                 width: 320,
