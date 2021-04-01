@@ -114,7 +114,8 @@ class QrcodeReaderViewState extends State<QrcodeReaderView>
   Future _scanImage() async {
     stopScan();
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
-    final rest = await FlutterQrReader.imgScan(File(image!.path));
+    if (image == null) return;
+    final rest = await FlutterQrReader.imgScan(File(image.path));
     if (rest != null) {
       await widget.onScan(rest);
     }

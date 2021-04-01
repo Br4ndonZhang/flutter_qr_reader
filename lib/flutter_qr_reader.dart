@@ -119,13 +119,16 @@ class QrReaderViewController {
   Future _handleMessages(MethodCall call) async {
     switch (call.method) {
       case "onQRCodeRead":
-        final points = List<Offset>.empty();
+        var points = new List<Offset>.filled(4, Offset(0, 0), growable: true);
         if (call.arguments.containsKey("points")) {
           final pointsStrs = call.arguments["points"];
           for (String point in pointsStrs) {
             final a = point.split(",");
-            points.add(
-                Offset(double.tryParse(a.first)!, double.tryParse(a.last)!));
+            if (double.tryParse(a.first) != null &&
+                double.tryParse(a.last) != null) {
+              points.add(
+                  Offset(double.tryParse(a.first)!, double.tryParse(a.last)!));
+            }
           }
         }
 
